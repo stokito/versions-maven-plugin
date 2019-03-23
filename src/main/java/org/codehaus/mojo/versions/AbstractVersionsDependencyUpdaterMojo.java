@@ -195,12 +195,9 @@ public abstract class AbstractVersionsDependencyUpdaterMojo
         {
             return null;
         }
-        Iterator<?> iter = getProject().getDependencyArtifacts().iterator();
-        while ( iter.hasNext() )
-        {
-            Artifact artifact = (Artifact) iter.next();
-            if ( compare( artifact, dependency ) )
-            {
+        for (Object o : getProject().getDependencyArtifacts()) {
+            Artifact artifact = (Artifact) o;
+            if (compare(artifact, dependency)) {
                 return artifact;
             }
         }
@@ -482,17 +479,12 @@ public abstract class AbstractVersionsDependencyUpdaterMojo
         int nextRangeStartDelimiterIndex = -1;
 
         char[] delimiters = chars.toCharArray();
-        for ( int i = 0; i < delimiters.length; i++ )
-        {
-            int index = includeString.indexOf( delimiters[i] );
-            if ( index >= 0 && nextRangeStartDelimiterIndex >= 0 )
-            {
-                nextRangeStartDelimiterIndex = Math.min( index, nextRangeStartDelimiterIndex );
-            }
-            else
-            {
-                if ( index >= 0 )
-                {
+        for (char delimiter : delimiters) {
+            int index = includeString.indexOf(delimiter);
+            if (index >= 0 && nextRangeStartDelimiterIndex >= 0) {
+                nextRangeStartDelimiterIndex = Math.min(index, nextRangeStartDelimiterIndex);
+            } else {
+                if (index >= 0) {
                     nextRangeStartDelimiterIndex = index;
                 }
             }

@@ -64,15 +64,13 @@ public class PluginUpdatesDetails
 
     public boolean isDependencyUpdateAvailable()
     {
-        for ( Iterator i = dependencyVersions.values().iterator(); i.hasNext(); )
-        {
-            ArtifactVersions versions = (ArtifactVersions) i.next();
-            ArtifactVersion[] dependencyUpdates = versions.getAllUpdates( UpdateScope.ANY, includeSnapshots );
-            if ( dependencyUpdates != null && dependencyUpdates.length > 0 )
-            {
-                return true;
-            }
+      for (Object o : dependencyVersions.values()) {
+        ArtifactVersions versions = (ArtifactVersions) o;
+        ArtifactVersion[] dependencyUpdates = versions.getAllUpdates(UpdateScope.ANY, includeSnapshots);
+        if (dependencyUpdates != null && dependencyUpdates.length > 0) {
+          return true;
         }
+      }
         return false;
     }
 

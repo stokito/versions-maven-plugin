@@ -148,19 +148,16 @@ public class UseNextSnapshotsMojo
                 getLog().info( "Upper bound: " + (upperBound == null ? "none" : upperBound.toString() ) );
                 ArtifactVersion[] newer = versions.getVersions( lowerBound, upperBound, true, false, false );
                 getLog().debug( "Candidate versions " + Arrays.asList( newer ) );
-                for ( int j = 0; j < newer.length; j++ )
-                {
-                    String newVersion = newer[j].toString();
-                    if ( matchSnapshotRegex.matcher( newVersion ).matches() )
-                    {
-                        if ( PomHelper.setDependencyVersion( pom, dep.getGroupId(), dep.getArtifactId(), version,
-                                                             newVersion, getProject().getModel() ) )
-                        {
-                            getLog().info( "Updated " + toString( dep ) + " to version " + newVersion );
-                        }
-                        break;
-                    }
+              for (ArtifactVersion artifactVersion : newer) {
+                String newVersion = artifactVersion.toString();
+                if (matchSnapshotRegex.matcher(newVersion).matches()) {
+                  if (PomHelper.setDependencyVersion(pom, dep.getGroupId(), dep.getArtifactId(), version,
+                    newVersion, getProject().getModel())) {
+                    getLog().info("Updated " + toString(dep) + " to version " + newVersion);
+                  }
+                  break;
                 }
+              }
             }
         }
     }

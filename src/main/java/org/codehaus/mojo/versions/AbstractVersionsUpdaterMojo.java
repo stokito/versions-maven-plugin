@@ -335,15 +335,10 @@ public abstract class AbstractVersionsUpdaterMojo
                 writeFile( outFile, input );
             }
         }
-        catch ( IOException e )
+        catch ( IOException | XMLStreamException e )
         {
             getLog().error( e );
-        }
-        catch ( XMLStreamException e )
-        {
-            getLog().error( e );
-        }
-        catch ( ArtifactMetadataRetrievalException e )
+        } catch ( ArtifactMetadataRetrievalException e )
         {
             throw new MojoExecutionException( e.getMessage(), e );
         }

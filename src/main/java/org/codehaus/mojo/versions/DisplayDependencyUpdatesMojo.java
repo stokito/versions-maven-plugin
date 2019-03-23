@@ -159,10 +159,7 @@ public class DisplayDependencyUpdatesMojo
             {
                 if ( plugin.getDependencies() != null && !plugin.getDependencies().isEmpty() )
                 {
-                    for ( Dependency pluginDependency : plugin.getDependencies() )
-                    {
-                        result.add( pluginDependency );
-                    }
+                    result.addAll(plugin.getDependencies());
                 }
             }
         }
@@ -176,10 +173,7 @@ public class DisplayDependencyUpdatesMojo
         {
             if ( plugin.getDependencies() != null && !plugin.getDependencies().isEmpty() )
             {
-                for ( Dependency pluginDependency : plugin.getDependencies() )
-                {
-                    result.add( pluginDependency );
-                }
+                result.addAll(plugin.getDependencies());
             }
         }
         return result;
@@ -198,28 +192,23 @@ public class DisplayDependencyUpdatesMojo
     private static Set<Dependency> removeDependencyManagment( Set<Dependency> dependencies, Set<Dependency> dependencyManagement )
     {
         Set<Dependency> result = new TreeSet<>( new DependencyComparator() );
-        for ( Iterator<Dependency> i = dependencies.iterator(); i.hasNext(); )
-        {
-            Dependency c = i.next();
+        for (Dependency c : dependencies) {
             boolean matched = false;
             Iterator<Dependency> j = dependencyManagement.iterator();
-            while ( !matched && j.hasNext() )
-            {
-                Dependency t =j.next();
-                if ( StringUtils.equals( t.getGroupId(), c.getGroupId() )
-                    && StringUtils.equals( t.getArtifactId(), c.getArtifactId() )
-                    && ( t.getScope() == null || StringUtils.equals( t.getScope(), c.getScope() ) )
-                    && ( t.getClassifier() == null || StringUtils.equals( t.getClassifier(), c.getClassifier() ) )
-                    && ( c.getVersion() == null || t.getVersion() == null
-                        || StringUtils.equals( t.getVersion(), c.getVersion() ) ) )
-                {
+            while (!matched && j.hasNext()) {
+                Dependency t = j.next();
+                if (StringUtils.equals(t.getGroupId(), c.getGroupId())
+                  && StringUtils.equals(t.getArtifactId(), c.getArtifactId())
+                  && (t.getScope() == null || StringUtils.equals(t.getScope(), c.getScope()))
+                  && (t.getClassifier() == null || StringUtils.equals(t.getClassifier(), c.getClassifier()))
+                  && (c.getVersion() == null || t.getVersion() == null
+                  || StringUtils.equals(t.getVersion(), c.getVersion()))) {
                     matched = true;
                     break;
                 }
             }
-            if ( !matched )
-            {
-                result.add( c );
+            if (!matched) {
+                result.add(c);
             }
         }
         return result;
@@ -355,11 +344,7 @@ public class DisplayDependencyUpdatesMojo
                 logUpdates( getHelper().lookupDependenciesUpdates( pluginDependencies, false ), "Plugin Dependencies" );
             }
         }
-        catch ( InvalidVersionSpecificationException e )
-        {
-            throw new MojoExecutionException( e.getMessage(), e );
-        }
-        catch ( ArtifactMetadataRetrievalException e )
+        catch ( InvalidVersionSpecificationException | ArtifactMetadataRetrievalException e )
         {
             throw new MojoExecutionException( e.getMessage(), e );
         }
@@ -396,42 +381,32 @@ public class DisplayDependencyUpdatesMojo
     {
         List<String> withUpdates = new ArrayList<>();
         List<String> usingCurrent = new ArrayList<>();
-        Iterator i = updates.values().iterator();
-        while ( i.hasNext() )
-        {
-            ArtifactVersions versions = (ArtifactVersions) i.next();
-            String left = "  " + ArtifactUtils.versionlessKey( versions.getArtifact() ) + " ";
+        for (ArtifactVersions versions : updates.values()) {
+            String left = "  " + ArtifactUtils.versionlessKey(versions.getArtifact()) + " ";
             final String current;
             ArtifactVersion latest;
-            if ( versions.isCurrentVersionDefined() )
-            {
+            if (versions.isCurrentVersionDefined()) {
                 current = versions.getCurrentVersion().toString();
-                latest = versions.getNewestUpdate( calculateUpdateScope(), allowSnapshots );
-            }
-            else
-            {
+                latest = versions.getNewestUpdate(calculateUpdateScope(), allowSnapshots);
+            } else {
                 ArtifactVersion newestVersion =
-                    versions.getNewestVersion( versions.getArtifact().getVersionRange(), allowSnapshots );
+                  versions.getNewestVersion(versions.getArtifact().getVersionRange(), allowSnapshots);
                 current = versions.getArtifact().getVersionRange().toString();
                 latest = newestVersion == null ? null
-                                : versions.getNewestUpdate( newestVersion, calculateUpdateScope(), allowSnapshots );
-                if ( latest != null
-                    && ArtifactVersions.isVersionInRange( latest, versions.getArtifact().getVersionRange() ) )
-                {
+                  : versions.getNewestUpdate(newestVersion, calculateUpdateScope(), allowSnapshots);
+                if (latest != null
+                  && ArtifactVersions.isVersionInRange(latest, versions.getArtifact().getVersionRange())) {
                     latest = null;
                 }
             }
-            String right = " " + ( latest == null ? current : current + " -> " + latest.toString() );
+            String right = " " + (latest == null ? current : current + " -> " + latest.toString());
             List<String> t = latest == null ? usingCurrent : withUpdates;
-            if ( right.length() + left.length() + 3 > INFO_PAD_SIZE )
-            {
-                t.add( left + "..." );
-                t.add( StringUtils.leftPad( right, INFO_PAD_SIZE ) );
+            if (right.length() + left.length() + 3 > INFO_PAD_SIZE) {
+                t.add(left + "...");
+                t.add(StringUtils.leftPad(right, INFO_PAD_SIZE));
 
-            }
-            else
-            {
-                t.add( StringUtils.rightPad( left, INFO_PAD_SIZE - right.length(), "." ) + right );
+            } else {
+                t.add(StringUtils.rightPad(left, INFO_PAD_SIZE - right.length(), ".") + right);
             }
         }
 
@@ -448,14 +423,12 @@ public class DisplayDependencyUpdatesMojo
             else
             {
                 logLine( false, "The following dependencies in " + section + " are using the newest version:" );
-                i = usingCurrent.iterator();
-                while ( i.hasNext() )
-                {
-                    logLine( false, (String) i.next() );
+                for (String s : usingCurrent) {
+                    logLine(false, s);
                 }
                 logLine( false, "" );
             }
-        }        
+        }
         
         
         if ( withUpdates.isEmpty() )
@@ -469,10 +442,8 @@ public class DisplayDependencyUpdatesMojo
         else
         {
             logLine( false, "The following dependencies in " + section + " have newer versions:" );
-            i = withUpdates.iterator();
-            while ( i.hasNext() )
-            {
-                logLine( false, (String) i.next() );
+            for (String withUpdate : withUpdates) {
+                logLine(false, withUpdate);
             }
             logLine( false, "" );
         }

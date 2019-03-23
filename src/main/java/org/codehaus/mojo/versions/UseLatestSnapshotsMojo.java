@@ -114,7 +114,7 @@ public class UseLatestSnapshotsMojo
                 dependency.setGroupId( getProject().getParent().getGroupId() );
                 dependency.setVersion( getProject().getParent().getVersion() );
                 dependency.setType("pom");
-                List list = new ArrayList();
+                List<Dependency> list = new ArrayList<>(1);
                 list.add(dependency);
                 useLatestSnapshots( pom, list );
             }
@@ -170,19 +170,17 @@ public class UseLatestSnapshotsMojo
                 String latestVersion = null;
                 ArrayList snapshotsOnly = new ArrayList();
 
-                for ( int j = 0; j < newer.length; j++ )
-                {
-                    String newVersion = newer[j].toString();
-                    if ( matchSnapshotRegex.matcher( newVersion ).matches() )
-                    {
-                        snapshotsOnly.add( newer[j] );
+                for (ArtifactVersion artifactVersion : newer) {
+                    String newVersion = artifactVersion.toString();
+                    if (matchSnapshotRegex.matcher(newVersion).matches()) {
+                        snapshotsOnly.add(artifactVersion);
                     }
                 }
                 getLog().debug("Snapshot Only versions " + snapshotsOnly.toString());
 
                 ArtifactVersion[] filteredVersions = majorMinorIncfilter.filter( selectedVersion,
                                                                                 (ArtifactVersion[]) snapshotsOnly.toArray(
-                                                                                    new ArtifactVersion[snapshotsOnly.size()] ) );
+                                                                                  new ArtifactVersion[0]) );
                 getLog().debug( "Filtered versions " + Arrays.asList( filteredVersions ) );
 
 
@@ -193,9 +191,9 @@ public class UseLatestSnapshotsMojo
                     {
                         if ( artifact.getId().equals(getProject().getParentArtifact().getId()) && isProcessingParent() )
                         {
-                            if ( PomHelper.setProjectParentVersion( pom, latestVersion.toString() ) )
+                            if ( PomHelper.setProjectParentVersion( pom, latestVersion) )
                             {
-                                getLog().debug( "Made parent update from " + version + " to " + latestVersion.toString() );
+                                getLog().debug( "Made parent update from " + version + " to " + latestVersion);
                             }
                         }
                     }

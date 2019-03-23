@@ -322,7 +322,7 @@ public abstract class AbstractVersionDetails
     {
         final VersionComparator versionComparator = getVersionComparator();
         Set<ArtifactVersion> result = new TreeSet<>( versionComparator );
-        for ( ArtifactVersion candidate : Arrays.asList( getVersions( includeSnapshots ) ) )
+        for ( ArtifactVersion candidate : getVersions( includeSnapshots ))
         {
             if ( versionRange != null && !ArtifactVersions.isVersionInRange( candidate, versionRange ) )
             {
@@ -344,7 +344,7 @@ public abstract class AbstractVersionDetails
             }
             result.add( candidate );
         }
-        return result.toArray( new ArtifactVersion[result.size()] );
+        return result.toArray(new ArtifactVersion[0]);
     }
 
     public final ArtifactVersion getOldestUpdate( ArtifactVersion currentVersion, UpdateScope updateScope )
